@@ -3,92 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="シンプルで美しいテスト用ショーケースサイト。インタラクティブなコンポーネントをお試しいただけます。">
-    <title>Test Showcase - test1.github.io</title>
+    <meta name="description" content="TabiReady - あなたの旅行準備をスマートにサポートするアプリ。持ち物チェックリストや出発前のToDo、カウントダウン機能。">
+    <title>TabiReady - スマート旅行準備サポーター</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="theme-cyberpunk">
+<body class="theme-travel">
     <div class="bg-glow"></div>
     <div class="container">
         <!-- Header -->
         <header>
             <nav>
-                <div class="logo">Test<span>Showcase</span></div>
-                <div class="theme-controls">
-                    <button class="theme-btn active" data-theme="cyberpunk" id="btn-cyberpunk">Cyberpunk</button>
-                    <button class="theme-btn" data-theme="ocean" id="btn-ocean">Ocean</button>
-                    <button class="theme-btn" data-theme="sunset" id="btn-sunset">Sunset</button>
-                </div>
+                <div class="logo">🧳 Tabi<span>Ready</span></div>
+                <div class="header-tagline">旅行の準備をスマートに</div>
             </nav>
         </header>
 
-        <!-- Hero Section -->
-        <section class="hero">
-            <h1 class="hero-title">Welcome to the <span>Test Sandbox</span></h1>
-            <p class="hero-subtitle">ここはインタラクティブなWeb要素をテストするためのシンプルで洗練されたショーケースサイトです。</p>
-        </section>
-
-        <!-- Main Content (Grid layout) -->
-        <main class="grid-container">
-            <!-- Card 1: Interactive Checklist -->
-            <section class="card glass" id="todo-section">
-                <h2>Interactive Checklist</h2>
-                <p class="card-desc">ローカルストレージに自動保存されるシンプルなやることリストです。</p>
-                <div class="todo-input-group">
-                    <input type="text" id="todo-input" placeholder="新しいタスクを入力..." aria-label="タスク入力">
-                    <button id="todo-add-btn">追加</button>
-                </div>
-                <ul id="todo-list" class="todo-list">
-                    <!-- Dynamic Items -->
-                </ul>
-            </section>
-
-            <!-- Card 2: Interactive Playground -->
-            <section class="card glass" id="playground-section">
-                <h2>Interactive Sandbox</h2>
-                <p class="card-desc">JavaScriptとCSSのアニメーション連動をテストするためのインタラクティブなボタンとカウンターです。</p>
-                <div class="counter-widget">
-                    <span id="counter-value">0</span>
-                    <div class="counter-buttons">
-                        <button id="counter-dec" class="control-btn" aria-label="減らす">-</button>
-                        <button id="counter-inc" class="control-btn" aria-label="増やす">+</button>
+        <!-- Main Layout (Grid) -->
+        <main class="app-layout">
+            <!-- Sidebar: Travel Settings & Progress -->
+            <aside class="sidebar-panel">
+                <!-- Travel Details Card -->
+                <section class="card glass">
+                    <h2>✈️ 旅行プラン設定</h2>
+                    <p class="card-desc">旅先と出発日を設定しましょう。</p>
+                    <div class="form-container">
+                        <div class="input-field">
+                            <label for="dest-input">目的地</label>
+                            <input type="text" id="dest-input" placeholder="例: ハワイ、京都" autocomplete="off">
+                        </div>
+                        <div class="input-field">
+                            <label for="date-input">出発日</label>
+                            <input type="date" id="date-input">
+                        </div>
                     </div>
-                </div>
-                <div class="pulse-box-wrapper">
-                    <button id="pulse-trigger-btn" class="action-btn">アニメーション開始</button>
-                    <div id="pulse-box" class="pulse-box"></div>
-                </div>
-            </section>
 
-            <!-- Card 3: Contact Form Sandbox -->
-            <section class="card glass" id="form-section">
-                <h2>Feedback Terminal</h2>
-                <p class="card-desc">入力した内容がリアルタイムに表示されるテストフォームです。</p>
-                <form id="feedback-form" onsubmit="return false;">
-                    <div class="form-group">
-                        <input type="text" id="user-name" required placeholder=" " autocomplete="off">
-                        <label for="user-name">お名前</label>
+                    <!-- Countdown Display -->
+                    <div id="countdown-card" class="countdown-card hidden">
+                        <p class="countdown-label"><span id="dest-display"></span> まであと</p>
+                        <div class="countdown-timer">
+                            <span id="countdown-days">0</span><span class="timer-unit">日</span>
+                            <span id="countdown-hours">00</span><span class="timer-unit">時間</span>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <textarea id="user-message" required placeholder=" " rows="3"></textarea>
-                        <label for="user-message">メッセージ</label>
+                </section>
+
+                <!-- Preparation Progress Card -->
+                <section class="card glass">
+                    <h2>📊 準備ステータス</h2>
+                    <p class="card-desc">パッキングの進捗状況です。</p>
+                    <div class="progress-container">
+                        <div class="progress-ring-wrapper">
+                            <div class="progress-bar-bg">
+                                <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%"></div>
+                            </div>
+                            <div class="progress-text-display">
+                                <span id="progress-percentage">0%</span>
+                                <span class="progress-subtext">完了 (<span id="progress-counts">0/0</span>)</span>
+                            </div>
+                        </div>
                     </div>
-                    <button type="submit" id="form-submit-btn" class="action-btn submit-btn">送信する</button>
-                </form>
-                <div id="form-feedback" class="form-feedback hidden">
-                    <p class="feedback-title">📋 送信データプレビュー</p>
-                    <p><strong>名前:</strong> <span id="feedback-name"></span></p>
-                    <p><strong>メッセージ:</strong> <span id="feedback-msg"></span></p>
-                </div>
-            </section>
+                </section>
+
+                <!-- Presets Card -->
+                <section class="card glass">
+                    <h2>⚡ クイック生成</h2>
+                    <p class="card-desc">タイプに合わせておすすめの持ち物を一括追加します。</p>
+                    <div class="preset-buttons">
+                        <button class="preset-btn" data-preset="resort">🌴 南国・リゾート</button>
+                        <button class="preset-btn" data-preset="cold">❄️ 温泉・寒冷地</button>
+                        <button class="preset-btn" data-preset="business">💼 ビジネス・出張</button>
+                    </div>
+                </section>
+            </aside>
+
+            <!-- Main Panels: Packing Checklist & Pre-departure To-Do -->
+            <div class="main-panel">
+                <!-- Checklist Card -->
+                <section class="card glass packing-card">
+                    <div class="card-header-actions">
+                        <h2>📝 持ち物チェックリスト</h2>
+                        <button id="clear-packed-btn" class="text-action-btn">準備済みを消去</button>
+                    </div>
+                    
+                    <!-- Category Tabs -->
+                    <div class="tabs-container">
+                        <button class="tab-btn active" data-tab="all">全て</button>
+                        <button class="tab-btn" data-tab="essential">💳 貴重品</button>
+                        <button class="tab-btn" data-tab="gadget">🔌 電子機器</button>
+                        <button class="tab-btn" data-tab="clothing">👔 衣類</button>
+                        <button class="tab-btn" data-tab="toiletries">🧴 日用品</button>
+                    </div>
+
+                    <!-- Add Item Form -->
+                    <div class="add-item-bar">
+                        <input type="text" id="item-input" placeholder="持ち物を追加..." aria-label="持ち物を入力">
+                        <select id="category-select" aria-label="カテゴリー選択">
+                            <option value="essential">💳 貴重品</option>
+                            <option value="gadget" selected>🔌 電子機器</option>
+                            <option value="clothing">👔 衣類</option>
+                            <option value="toiletries">🧴 日用品</option>
+                        </select>
+                        <button id="item-add-btn">追加</button>
+                    </div>
+
+                    <!-- Packing List Items -->
+                    <ul id="packing-list" class="packing-list">
+                        <!-- Dynamic items -->
+                    </ul>
+                </section>
+
+                <!-- Pre-departure Tasks Card -->
+                <section class="card glass">
+                    <h2>📅 出発前のやることリスト (ToDo)</h2>
+                    <p class="card-desc">旅立つ前に済ませるべき手続きや準備です。</p>
+                    <ul id="todo-list" class="todo-list">
+                        <!-- Dynamic Pre-departure Todo Items -->
+                    </ul>
+                </section>
+            </div>
         </main>
 
+        <!-- Footer -->
         <footer>
-            <p>&copy; 2026 Test Showcase. Created for <a href="https://github.com/zsmsan/test1.github.io" target="_blank" rel="noopener noreferrer">zsmsan/test1.github.io</a></p>
+            <p>&copy; 2026 TabiReady. Hosted at <a href="https://github.com/zsmsan/test1.github.io" target="_blank" rel="noopener noreferrer">zsmsan/test1.github.io</a></p>
         </footer>
     </div>
     <script src="app.js"></script>
