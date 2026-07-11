@@ -61,8 +61,13 @@ body {
     z-index: 1;
 }
 
+/* Utility Classes */
+.hidden {
+    display: none !important;
+}
+
 /* ==========================================
-   HEADER
+   HEADER & USER MENU
    ========================================== */
 header {
     padding: 2rem 0 1rem 0;
@@ -90,6 +95,13 @@ nav {
     text-shadow: 0 0 15px var(--accent-glow);
 }
 
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
 .header-tagline {
     font-size: 0.9rem;
     color: var(--text-muted);
@@ -102,9 +114,170 @@ nav {
     border: 1px solid var(--border-color);
 }
 
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(46, 196, 182, 0.08);
+    padding: 0.3rem 0.85rem;
+    border-radius: 20px;
+    border: 1px solid rgba(46, 196, 182, 0.2);
+    animation: fadeIn 0.3s ease-out;
+}
+
+#user-display-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+.signout-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    transition: color var(--transition-speed) ease;
+}
+
+.signout-btn:hover {
+    color: #ef476f;
+}
+
 /* ==========================================
-   LAYOUT
+   AUTHENTICATION UI
    ========================================== */
+.auth-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    margin-bottom: 4rem;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 440px;
+    border-radius: var(--border-radius);
+    padding: 2.5rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent-secondary) 100%);
+}
+
+.auth-tabs {
+    display: flex;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    padding: 0.25rem;
+    border: 1px solid var(--border-color);
+    margin-bottom: 2rem;
+}
+
+.auth-tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.65rem;
+    cursor: pointer;
+    border-radius: 9px;
+    transition: all 0.2s ease;
+}
+
+.auth-tab-btn:hover {
+    color: var(--text-main);
+}
+
+.auth-tab-btn.active {
+    background: var(--accent);
+    color: #0b151a;
+    box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.auth-form h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 0.3rem;
+}
+
+.auth-desc {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+}
+
+.auth-submit-btn {
+    width: 100%;
+    background: var(--accent);
+    color: #0b151a;
+    border: none;
+    border-radius: 8px;
+    padding: 0.85rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: opacity 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.auth-submit-btn:hover {
+    opacity: 0.95;
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.auth-submit-btn:active {
+    transform: scale(0.98);
+}
+
+.auth-submit-btn.signup-btn {
+    background: var(--accent-secondary);
+}
+
+.auth-submit-btn.signup-btn:hover {
+    box-shadow: 0 0 15px var(--accent-secondary-glow);
+}
+
+.auth-error-msg {
+    color: #ff4d4d;
+    font-size: 0.8rem;
+    background: rgba(255, 77, 77, 0.08);
+    border: 1px solid rgba(255, 77, 77, 0.2);
+    padding: 0.65rem 0.85rem;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+    animation: slideIn 0.2s ease-out;
+}
+
+/* ==========================================
+   APP MAIN CONTENT LAYOUT
+   ========================================== */
+.app-content {
+    animation: fadeIn 0.6s ease-out;
+}
+
 .app-layout {
     display: grid;
     grid-template-columns: 360px 1fr;
@@ -620,6 +793,20 @@ footer a:hover {
     }
 }
 
+@media (max-width: 600px) {
+    header {
+        padding: 1.5rem 0 1rem 0;
+    }
+    nav {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .header-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
 @media (max-width: 480px) {
     .container {
         padding: 0 1rem;
@@ -632,5 +819,8 @@ footer a:hover {
     }
     .add-item-bar input, .add-item-bar select, .add-item-bar button {
         width: 100%;
+    }
+    .auth-card {
+        padding: 1.5rem;
     }
 }

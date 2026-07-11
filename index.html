@@ -18,114 +18,174 @@
         <header>
             <nav>
                 <div class="logo">🧳 Tabi<span>Ready</span></div>
-                <div class="header-tagline">旅行の準備をスマートに</div>
+                <div class="header-right">
+                    <span class="header-tagline">旅行の準備をスマートに</span>
+                    <!-- User Menu (Hidden by default) -->
+                    <div id="user-menu" class="user-menu hidden">
+                        <span id="user-display-name">👤 ユーザー</span>
+                        <button id="signout-btn" class="signout-btn">サインアウト</button>
+                    </div>
+                </div>
             </nav>
         </header>
 
-        <!-- Main Layout (Grid) -->
-        <main class="app-layout">
-            <!-- Sidebar: Travel Settings & Progress -->
-            <aside class="sidebar-panel">
-                <!-- Travel Details Card -->
-                <section class="card glass">
-                    <h2>✈️ 旅行プラン設定</h2>
-                    <p class="card-desc">旅先と出発日を設定しましょう。</p>
+        <!-- Auth Section (Visible by default) -->
+        <div id="auth-section" class="auth-section">
+            <div class="auth-card glass">
+                <div class="auth-tabs">
+                    <button id="tab-signin" class="auth-tab-btn active">サインイン</button>
+                    <button id="tab-signup" class="auth-tab-btn">新規登録</button>
+                </div>
+
+                <!-- Sign In Form -->
+                <form id="signin-form" class="auth-form">
+                    <h2>🔑 サインイン</h2>
+                    <p class="auth-desc">アカウント情報を入力して保護データを読み込みます。</p>
                     <div class="form-container">
                         <div class="input-field">
-                            <label for="dest-input">目的地</label>
-                            <input type="text" id="dest-input" placeholder="例: ハワイ、京都" autocomplete="off">
+                            <label for="signin-username">ユーザー名</label>
+                            <input type="text" id="signin-username" required placeholder="ユーザー名を入力" autocomplete="username">
                         </div>
                         <div class="input-field">
-                            <label for="date-input">出発日</label>
-                            <input type="date" id="date-input">
+                            <label for="signin-password">パスワード</label>
+                            <input type="password" id="signin-password" required placeholder="パスワードを入力" autocomplete="current-password">
                         </div>
+                        <div id="signin-error" class="auth-error-msg hidden"></div>
+                        <button type="submit" class="auth-submit-btn">ログイン</button>
                     </div>
+                </form>
 
-                    <!-- Countdown Display -->
-                    <div id="countdown-card" class="countdown-card hidden">
-                        <p class="countdown-label"><span id="dest-display"></span> まであと</p>
-                        <div class="countdown-timer">
-                            <span id="countdown-days">0</span><span class="timer-unit">日</span>
-                            <span id="countdown-hours">00</span><span class="timer-unit">時間</span>
+                <!-- Sign Up Form (Hidden by default) -->
+                <form id="signup-form" class="auth-form hidden">
+                    <h2>👤 アカウント新規登録</h2>
+                    <p class="auth-desc">あなた専用のアカウントと暗号鍵を設定します。</p>
+                    <div class="form-container">
+                        <div class="input-field">
+                            <label for="signup-username">希望するユーザー名</label>
+                            <input type="text" id="signup-username" required placeholder="例: zsmsan" autocomplete="username">
                         </div>
-                    </div>
-                </section>
-
-                <!-- Preparation Progress Card -->
-                <section class="card glass">
-                    <h2>📊 準備ステータス</h2>
-                    <p class="card-desc">パッキングの進捗状況です。</p>
-                    <div class="progress-container">
-                        <div class="progress-ring-wrapper">
-                            <div class="progress-bar-bg">
-                                <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%"></div>
-                            </div>
-                            <div class="progress-text-display">
-                                <span id="progress-percentage">0%</span>
-                                <span class="progress-subtext">完了 (<span id="progress-counts">0/0</span>)</span>
-                            </div>
+                        <div class="input-field">
+                            <label for="signup-password">パスワード</label>
+                            <input type="password" id="signup-password" required placeholder="パスワードを入力（データ保護に使用）" autocomplete="new-password">
                         </div>
+                        <div class="input-field">
+                            <label for="signup-password-confirm">パスワード（確認用）</label>
+                            <input type="password" id="signup-password-confirm" required placeholder="同じパスワードを再入力" autocomplete="new-password">
+                        </div>
+                        <div id="signup-error" class="auth-error-msg hidden"></div>
+                        <button type="submit" class="auth-submit-btn signup-btn">登録する</button>
                     </div>
-                </section>
-
-                <!-- Presets Card -->
-                <section class="card glass">
-                    <h2>⚡ クイック生成</h2>
-                    <p class="card-desc">タイプに合わせておすすめの持ち物を一括追加します。</p>
-                    <div class="preset-buttons">
-                        <button class="preset-btn" data-preset="resort">🌴 南国・リゾート</button>
-                        <button class="preset-btn" data-preset="cold">❄️ 温泉・寒冷地</button>
-                        <button class="preset-btn" data-preset="business">💼 ビジネス・出張</button>
-                    </div>
-                </section>
-            </aside>
-
-            <!-- Main Panels: Packing Checklist & Pre-departure To-Do -->
-            <div class="main-panel">
-                <!-- Checklist Card -->
-                <section class="card glass packing-card">
-                    <div class="card-header-actions">
-                        <h2>📝 持ち物チェックリスト</h2>
-                        <button id="clear-packed-btn" class="text-action-btn">準備済みを消去</button>
-                    </div>
-                    
-                    <!-- Category Tabs -->
-                    <div class="tabs-container">
-                        <button class="tab-btn active" data-tab="all">全て</button>
-                        <button class="tab-btn" data-tab="essential">💳 貴重品</button>
-                        <button class="tab-btn" data-tab="gadget">🔌 電子機器</button>
-                        <button class="tab-btn" data-tab="clothing">👔 衣類</button>
-                        <button class="tab-btn" data-tab="toiletries">🧴 日用品</button>
-                    </div>
-
-                    <!-- Add Item Form -->
-                    <div class="add-item-bar">
-                        <input type="text" id="item-input" placeholder="持ち物を追加..." aria-label="持ち物を入力">
-                        <select id="category-select" aria-label="カテゴリー選択">
-                            <option value="essential">💳 貴重品</option>
-                            <option value="gadget" selected>🔌 電子機器</option>
-                            <option value="clothing">👔 衣類</option>
-                            <option value="toiletries">🧴 日用品</option>
-                        </select>
-                        <button id="item-add-btn">追加</button>
-                    </div>
-
-                    <!-- Packing List Items -->
-                    <ul id="packing-list" class="packing-list">
-                        <!-- Dynamic items -->
-                    </ul>
-                </section>
-
-                <!-- Pre-departure Tasks Card -->
-                <section class="card glass">
-                    <h2>📅 出発前のやることリスト (ToDo)</h2>
-                    <p class="card-desc">旅立つ前に済ませるべき手続きや準備です。</p>
-                    <ul id="todo-list" class="todo-list">
-                        <!-- Dynamic Pre-departure Todo Items -->
-                    </ul>
-                </section>
+                </form>
             </div>
-        </main>
+        </div>
+
+        <!-- Main App Content (Hidden by default until authenticated) -->
+        <div id="app-content" class="app-content hidden">
+            <!-- Main Layout (Grid) -->
+            <main class="app-layout">
+                <!-- Sidebar: Travel Settings & Progress -->
+                <aside class="sidebar-panel">
+                    <!-- Travel Details Card -->
+                    <section class="card glass">
+                        <h2>✈️ 旅行プラン設定</h2>
+                        <p class="card-desc">旅先と出発日を設定しましょう。</p>
+                        <div class="form-container">
+                            <div class="input-field">
+                                <label for="dest-input">目的地</label>
+                                <input type="text" id="dest-input" placeholder="例: ハワイ、京都" autocomplete="off">
+                            </div>
+                            <div class="input-field">
+                                <label for="date-input">出発日</label>
+                                <input type="date" id="date-input">
+                            </div>
+                        </div>
+
+                        <!-- Countdown Display -->
+                        <div id="countdown-card" class="countdown-card hidden">
+                            <p class="countdown-label"><span id="dest-display"></span> まであと</p>
+                            <div class="countdown-timer">
+                                <span id="countdown-days">0</span><span class="timer-unit">日</span>
+                                <span id="countdown-hours">00</span><span class="timer-unit">時間</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Preparation Progress Card -->
+                    <section class="card glass">
+                        <h2>📊 準備ステータス</h2>
+                        <p class="card-desc">パッキングの進捗状況です。</p>
+                        <div class="progress-container">
+                            <div class="progress-ring-wrapper">
+                                <div class="progress-bar-bg">
+                                    <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%"></div>
+                                </div>
+                                <div class="progress-text-display">
+                                    <span id="progress-percentage">0%</span>
+                                    <span class="progress-subtext">完了 (<span id="progress-counts">0/0</span>)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Presets Card -->
+                    <section class="card glass">
+                        <h2>⚡ クイック生成</h2>
+                        <p class="card-desc">タイプに合わせておすすめの持ち物を一括追加します。</p>
+                        <div class="preset-buttons">
+                            <button class="preset-btn" data-preset="resort">🌴 南国・リゾート</button>
+                            <button class="preset-btn" data-preset="cold">❄️ 温泉・寒冷地</button>
+                            <button class="preset-btn" data-preset="business">💼 ビジネス・出張</button>
+                        </div>
+                    </section>
+                </aside>
+
+                <!-- Main Panels: Packing Checklist & Pre-departure To-Do -->
+                <div class="main-panel">
+                    <!-- Checklist Card -->
+                    <section class="card glass packing-card">
+                        <div class="card-header-actions">
+                            <h2>📝 持ち物チェックリスト</h2>
+                            <button id="clear-packed-btn" class="text-action-btn">準備済みを消去</button>
+                        </div>
+                        
+                        <!-- Category Tabs -->
+                        <div class="tabs-container">
+                            <button class="tab-btn active" data-tab="all">全て</button>
+                            <button class="tab-btn" data-tab="essential">💳 貴重品</button>
+                            <button class="tab-btn" data-tab="gadget">🔌 電子機器</button>
+                            <button class="tab-btn" data-tab="clothing">👔 衣類</button>
+                            <button class="tab-btn" data-tab="toiletries">🧴 日用品</button>
+                        </div>
+
+                        <!-- Add Item Form -->
+                        <div class="add-item-bar">
+                            <input type="text" id="item-input" placeholder="持ち物を追加..." aria-label="持ち物を入力">
+                            <select id="category-select" aria-label="カテゴリー選択">
+                                <option value="essential">💳 貴重品</option>
+                                <option value="gadget" selected>🔌 電子機器</option>
+                                <option value="clothing">👔 衣類</option>
+                                <option value="toiletries">🧴 日用品</option>
+                            </select>
+                            <button id="item-add-btn">追加</button>
+                        </div>
+
+                        <!-- Packing List Items -->
+                        <ul id="packing-list" class="packing-list">
+                            <!-- Dynamic items -->
+                        </ul>
+                    </section>
+
+                    <!-- Pre-departure Tasks Card -->
+                    <section class="card glass">
+                        <h2>📅 出発前のやることリスト (ToDo)</h2>
+                        <p class="card-desc">旅立つ前に済ませるべき手続きや準備です。</p>
+                        <ul id="todo-list" class="todo-list">
+                            <!-- Dynamic Pre-departure Todo Items -->
+                        </ul>
+                    </section>
+                </div>
+            </main>
+        </div>
 
         <!-- Footer -->
         <footer>
