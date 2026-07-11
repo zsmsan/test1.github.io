@@ -85,22 +85,22 @@
             <main class="app-layout">
                 <!-- Sidebar: Travel Settings & Progress -->
                 <aside class="sidebar-panel">
-                    <!-- Travel Details Card -->
+                    <!-- Travel Plan Selector Card -->
                     <section class="card glass">
-                        <h2>✈️ 旅行プラン設定</h2>
-                        <p class="card-desc">旅先と出発日を設定しましょう。</p>
+                        <h2>✈️ 旅行プランの管理</h2>
+                        <p class="card-desc">計画する旅行を選択または作成します。</p>
                         <div class="form-container">
                             <div class="input-field">
-                                <label for="dest-input">目的地</label>
-                                <input type="text" id="dest-input" placeholder="例: ハワイ、京都" autocomplete="off">
+                                <label for="trip-select">アクティブな計画</label>
+                                <select id="trip-select" class="trip-select">
+                                    <!-- Dynamic list of trips -->
+                                </select>
                             </div>
-                            <div class="input-field">
-                                <label for="date-input">出発日</label>
-                                <input type="date" id="date-input">
-                            </div>
+                            <button id="new-trip-btn" class="action-btn new-trip-btn">＋ 新規プラン作成</button>
+                            <button id="delete-trip-btn" class="text-action-btn delete-trip-btn">現在のプランを削除</button>
                         </div>
 
-                        <!-- Countdown Display -->
+                        <!-- Active Trip Summary & Countdown -->
                         <div id="countdown-card" class="countdown-card hidden">
                             <p class="countdown-label"><span id="dest-display"></span> まであと</p>
                             <div class="countdown-timer">
@@ -139,52 +139,155 @@
                     </section>
                 </aside>
 
-                <!-- Main Panels: Packing Checklist & Pre-departure To-Do -->
+                <!-- Main Panels: Itinerary, Packing, Todo -->
                 <div class="main-panel">
-                    <!-- Checklist Card -->
-                    <section class="card glass packing-card">
-                        <div class="card-header-actions">
-                            <h2>📝 持ち物チェックリスト</h2>
-                            <button id="clear-packed-btn" class="text-action-btn">準備済みを消去</button>
-                        </div>
-                        
-                        <!-- Category Tabs -->
-                        <div class="tabs-container">
-                            <button class="tab-btn active" data-tab="all">全て</button>
-                            <button class="tab-btn" data-tab="essential">💳 貴重品</button>
-                            <button class="tab-btn" data-tab="gadget">🔌 電子機器</button>
-                            <button class="tab-btn" data-tab="clothing">👔 衣類</button>
-                            <button class="tab-btn" data-tab="toiletries">🧴 日用品</button>
-                        </div>
+                    <!-- Main Navigation Tabs -->
+                    <div class="main-tabs">
+                        <button class="main-tab-btn active" data-main-tab="checklist">📝 持ち物リスト</button>
+                        <button class="main-tab-btn" data-main-tab="itinerary">🗺️ 行程表・日程</button>
+                        <button class="main-tab-btn" data-main-tab="todo">📅 出発前ToDo</button>
+                    </div>
 
-                        <!-- Add Item Form -->
-                        <div class="add-item-bar">
-                            <input type="text" id="item-input" placeholder="持ち物を追加..." aria-label="持ち物を入力">
-                            <select id="category-select" aria-label="カテゴリー選択">
-                                <option value="essential">💳 貴重品</option>
-                                <option value="gadget" selected>🔌 電子機器</option>
-                                <option value="clothing">👔 衣類</option>
-                                <option value="toiletries">🧴 日用品</option>
-                            </select>
-                            <button id="item-add-btn">追加</button>
-                        </div>
+                    <!-- 1. Packing Checklist Panel -->
+                    <div id="checklist-panel" class="main-panel-content">
+                        <section class="card glass packing-card">
+                            <div class="card-header-actions">
+                                <h2>📝 持ち物チェックリスト</h2>
+                                <button id="clear-packed-btn" class="text-action-btn">準備済みを消去</button>
+                            </div>
+                            
+                            <!-- Category Tabs -->
+                            <div class="tabs-container">
+                                <button class="tab-btn active" data-tab="all">全て</button>
+                                <button class="tab-btn" data-tab="essential">💳 貴重品</button>
+                                <button class="tab-btn" data-tab="gadget">🔌 電子機器</button>
+                                <button class="tab-btn" data-tab="clothing">👔 衣類</button>
+                                <button class="tab-btn" data-tab="toiletries">🧴 日用品</button>
+                            </div>
 
-                        <!-- Packing List Items -->
-                        <ul id="packing-list" class="packing-list">
-                            <!-- Dynamic items -->
-                        </ul>
-                    </section>
+                            <!-- Add Item Form -->
+                            <div class="add-item-bar">
+                                <input type="text" id="item-input" placeholder="持ち物を追加..." aria-label="持ち物を入力">
+                                <select id="category-select" aria-label="カテゴリー選択">
+                                    <option value="essential">💳 貴重品</option>
+                                    <option value="gadget" selected>🔌 電子機器</option>
+                                    <option value="clothing">👔 衣類</option>
+                                    <option value="toiletries">🧴 日用品</option>
+                                </select>
+                                <button id="item-add-btn">追加</button>
+                            </div>
 
-                    <!-- Pre-departure Tasks Card -->
-                    <section class="card glass">
-                        <h2>📅 出発前のやることリスト (ToDo)</h2>
-                        <p class="card-desc">旅立つ前に済ませるべき手続きや準備です。</p>
-                        <ul id="todo-list" class="todo-list">
-                            <!-- Dynamic Pre-departure Todo Items -->
-                        </ul>
-                    </section>
+                            <!-- Packing List Items -->
+                            <ul id="packing-list" class="packing-list">
+                                <!-- Dynamic items -->
+                            </ul>
+                        </section>
+                    </div>
+
+                    <!-- 2. Itinerary Panel (NEW) -->
+                    <div id="itinerary-panel" class="main-panel-content hidden">
+                        <section class="card glass">
+                            <h2>🗺️ 行程表・ルート</h2>
+                            <p class="card-desc">旅行中の日別の行動プランをスケジュール化します。</p>
+
+                            <!-- Day Tabs (e.g. 1日目, 2日目...) -->
+                            <div id="itinerary-day-tabs" class="tabs-container itinerary-day-tabs">
+                                <!-- Dynamic day tabs -->
+                            </div>
+
+                            <!-- Itinerary Day Content -->
+                            <div id="itinerary-day-content" class="itinerary-day-content">
+                                <!-- Start/End points -->
+                                <div class="itinerary-points">
+                                    <div class="input-field">
+                                        <label for="itinerary-start-point">🏁 出発地</label>
+                                        <input type="text" id="itinerary-start-point" placeholder="例: 自宅、東京駅、空港">
+                                    </div>
+                                    <div class="itinerary-point-arrow">➡️</div>
+                                    <div class="input-field">
+                                        <label for="itinerary-end-point">🏨 到着地</label>
+                                        <input type="text" id="itinerary-end-point" placeholder="例: ホテル、観光スポット">
+                                    </div>
+                                </div>
+
+                                <!-- Timeline View -->
+                                <div class="timeline-container">
+                                    <h3>📍 スケジュール・タイムライン</h3>
+                                    <div id="timeline-list" class="timeline-list">
+                                        <!-- Dynamic timeline items -->
+                                    </div>
+                                </div>
+
+                                <!-- Add Timeline Form -->
+                                <div class="add-timeline-form">
+                                    <h4>⏰ スケジュールの追加</h4>
+                                    <div class="timeline-inputs">
+                                        <div class="input-field time-field">
+                                            <label for="timeline-time-start">出発/開始時刻</label>
+                                            <input type="time" id="timeline-time-start">
+                                        </div>
+                                        <div class="input-field time-field">
+                                            <label for="timeline-time-end">到着/終了時刻</label>
+                                            <input type="time" id="timeline-time-end">
+                                        </div>
+                                        <div class="input-field desc-field">
+                                            <label for="timeline-location">場所・出来事</label>
+                                            <input type="text" id="timeline-location" placeholder="例: 新幹線で移動、ディナー">
+                                        </div>
+                                    </div>
+                                    <div class="input-field">
+                                        <label for="timeline-note">メモ (運行便名、予約詳細、やりたい事など)</label>
+                                        <input type="text" id="timeline-note" placeholder="例: 予約番号: 12345、のぞみ3号自由席">
+                                    </div>
+                                    <button id="add-timeline-btn" class="action-btn add-timeline-btn">タイムラインに追加</button>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- 3. Pre-departure To-Do Panel -->
+                    <div id="todo-panel" class="main-panel-content hidden">
+                        <section class="card glass">
+                            <h2>📅 出発前のやることリスト (ToDo)</h2>
+                            <p class="card-desc">旅立つ前に済ませるべき手続きや準備です。</p>
+                            <ul id="todo-list" class="todo-list">
+                                <!-- Dynamic Pre-departure Todo Items -->
+                            </ul>
+                        </section>
+                    </div>
                 </div>
             </main>
+        </div>
+
+        <!-- New Trip Modal -->
+        <div id="new-trip-modal" class="modal hidden">
+            <div class="modal-content glass">
+                <span class="modal-close" id="modal-close">&times;</span>
+                <h2>✈️ 新しい旅行プランを作成</h2>
+                <form id="new-trip-form" onsubmit="return false;">
+                    <div class="form-container">
+                        <div class="input-field">
+                            <label for="modal-trip-name">旅行の名前</label>
+                            <input type="text" id="modal-trip-name" required placeholder="例: 九州旅行、夏の北海道">
+                        </div>
+                        <div class="input-field">
+                            <label for="modal-start-date">出発日</label>
+                            <input type="date" id="modal-start-date" required>
+                        </div>
+                        <div class="modal-duration">
+                            <div class="input-field">
+                                <label for="modal-nights">宿泊数</label>
+                                <input type="number" id="modal-nights" min="0" value="2" required>
+                            </div>
+                            <div class="input-field">
+                                <label for="modal-days">日数</label>
+                                <input type="number" id="modal-days" min="1" value="3" required>
+                            </div>
+                        </div>
+                        <button type="submit" id="modal-submit-btn" class="auth-submit-btn">プランを作成</button>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <!-- Footer -->

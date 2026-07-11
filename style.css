@@ -280,7 +280,7 @@ nav {
 
 .app-layout {
     display: grid;
-    grid-template-columns: 360px 1fr;
+    grid-template-columns: 350px 1fr;
     gap: 2.5rem;
     align-items: start;
     margin-bottom: 4rem;
@@ -295,7 +295,7 @@ nav {
 .main-panel {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 2.5rem;
 }
 
 /* ==========================================
@@ -341,6 +341,56 @@ nav {
     color: var(--text-muted);
     font-size: 0.85rem;
     margin-bottom: 1.5rem;
+}
+
+/* ==========================================
+   TRIP SELECT DROPDOWN
+   ========================================== */
+.trip-select {
+    width: 100%;
+    background: #112128;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 0.95rem;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.trip-select:focus {
+    border-color: var(--accent);
+}
+
+.new-trip-btn {
+    background: rgba(46, 196, 182, 0.15) !important;
+    border: 1px solid rgba(46, 196, 182, 0.3) !important;
+    color: var(--accent) !important;
+    cursor: pointer;
+    font-weight: 700;
+    border-radius: 8px;
+    padding: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.new-trip-btn:hover {
+    background: var(--accent) !important;
+    color: #0b151a !important;
+    box-shadow: 0 0 15px var(--accent-glow) !important;
+}
+
+.delete-trip-btn {
+    color: #8fa3a6;
+    margin-top: 0.5rem;
+    display: block;
+    text-align: center;
+    width: 100%;
+}
+
+.delete-trip-btn:hover {
+    color: #ef476f !important;
 }
 
 /* ==========================================
@@ -506,7 +556,52 @@ nav {
 }
 
 /* ==========================================
-   TABS UI
+   MAIN VIEW TABS
+   ========================================== */
+.main-tabs {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.main-tabs::-webkit-scrollbar {
+    display: none;
+}
+
+.main-tab-btn {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 0.85rem 1.75rem;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.main-tab-btn:hover {
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.main-tab-btn.active {
+    background: var(--accent);
+    color: #0b151a;
+    border-color: var(--accent);
+    box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.main-panel-content {
+    animation: fadeIn 0.4s ease-out;
+}
+
+/* ==========================================
+   TABS UI (SUB TABS: CATEGORIES & DAY SETTINGS)
    ========================================== */
 .tabs-container {
     display: flex;
@@ -517,11 +612,11 @@ nav {
     border: 1px solid var(--border-color);
     margin-bottom: 1.5rem;
     overflow-x: auto;
-    scrollbar-width: none; /* Firefox */
+    scrollbar-width: none;
 }
 
 .tabs-container::-webkit-scrollbar {
-    display: none; /* Safari/Chrome */
+    display: none;
 }
 
 .tab-btn {
@@ -609,6 +704,162 @@ nav {
 
 .add-item-bar button:active {
     transform: scale(0.97);
+}
+
+/* ==========================================
+   ITINERARY: POINTS & TIMELINE
+   ========================================== */
+.itinerary-points {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.itinerary-points .input-field {
+    flex: 1;
+}
+
+.itinerary-point-arrow {
+    font-size: 1.5rem;
+    color: var(--accent);
+    margin-top: 1.5rem;
+    text-shadow: 0 0 10px var(--accent-glow);
+}
+
+.timeline-container {
+    margin-bottom: 2.5rem;
+}
+
+.timeline-container h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    color: var(--accent);
+}
+
+.timeline-list {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Vertical line connecting nodes */
+.timeline-list::before {
+    content: '';
+    position: absolute;
+    left: 4.5px;
+    top: 10px;
+    bottom: 10px;
+    width: 2px;
+    background: var(--border-color);
+}
+
+.timeline-item {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid var(--border-color);
+    padding: 1.1rem 1.5rem;
+    border-radius: 12px;
+    transition: all var(--transition-speed) ease;
+}
+
+.timeline-item:hover {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(46, 196, 182, 0.2);
+}
+
+/* Timeline dot node */
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 1.5rem;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg-primary);
+    box-shadow: 0 0 10px var(--accent-glow);
+    z-index: 2;
+}
+
+.timeline-time-col {
+    display: flex;
+    flex-direction: column;
+    min-width: 90px;
+    font-family: monospace;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--accent-secondary);
+}
+
+.time-dash {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin: -2px 0;
+}
+
+.timeline-content-col {
+    flex: 1;
+}
+
+.timeline-location-text {
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.timeline-note-text {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* Add timeline form styling */
+.add-timeline-form {
+    border-top: 1px solid var(--border-color);
+    padding-top: 2rem;
+}
+
+.add-timeline-form h4 {
+    font-size: 1.05rem;
+    margin-bottom: 1.25rem;
+    color: var(--accent);
+}
+
+.timeline-inputs {
+    display: grid;
+    grid-template-columns: 120px 120px 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.add-timeline-btn {
+    background: rgba(255, 159, 28, 0.15) !important;
+    border: 1px solid rgba(255, 159, 28, 0.3) !important;
+    color: var(--accent-secondary) !important;
+    margin-top: 0.5rem;
+}
+
+.add-timeline-btn:hover {
+    background: var(--accent-secondary) !important;
+    color: #0b151a !important;
+    box-shadow: 0 0 15px var(--accent-secondary-glow) !important;
 }
 
 /* ==========================================
@@ -750,6 +1001,64 @@ nav {
 }
 
 /* ==========================================
+   MODAL WINDOW STYLING
+   ========================================== */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+    width: 90%;
+    max-width: 480px;
+    border-radius: var(--border-radius);
+    padding: 2.5rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+    position: relative;
+    animation: slideDown 0.4s cubic-bezier(0.1, 0.8, 0.3, 1);
+}
+
+.modal-content h2 {
+    font-size: 1.45rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    color: var(--accent);
+}
+
+.modal-close {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.5rem;
+    font-size: 2rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s ease;
+}
+
+.modal-close:hover {
+    color: #ef476f;
+}
+
+.modal-duration {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* ==========================================
    FOOTER
    ========================================== */
 footer {
@@ -774,8 +1083,8 @@ footer a:hover {
    ANIMATIONS & KEYFRAMES
    ========================================== */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 @keyframes slideIn {
@@ -783,10 +1092,15 @@ footer a:hover {
     to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 /* ==========================================
    RESPONSIVENESS
    ========================================== */
-@media (max-width: 860px) {
+@media (max-width: 920px) {
     .app-layout {
         grid-template-columns: 1fr;
         gap: 2rem;
@@ -805,6 +1119,20 @@ footer a:hover {
         width: 100%;
         justify-content: space-between;
     }
+    .itinerary-points {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    .itinerary-point-arrow {
+        text-align: center;
+        margin: 0;
+        transform: rotate(90deg);
+    }
+    .timeline-inputs {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -820,7 +1148,7 @@ footer a:hover {
     .add-item-bar input, .add-item-bar select, .add-item-bar button {
         width: 100%;
     }
-    .auth-card {
+    .auth-card, .modal-content {
         padding: 1.5rem;
     }
 }
