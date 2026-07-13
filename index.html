@@ -213,16 +213,19 @@
                             <!-- Itinerary Day Content -->
                             <div id="itinerary-day-content" class="itinerary-day-content">
                                 <!-- Start/End points -->
-                                <div class="itinerary-points">
-                                    <div class="input-field">
-                                        <label for="itinerary-start-point">出発地</label>
-                                        <input type="text" id="itinerary-start-point" placeholder="例: 東京、自宅">
+                                <div class="itinerary-points-wrapper">
+                                    <div class="itinerary-points">
+                                        <div class="input-field">
+                                            <label for="itinerary-start-point">出発地</label>
+                                            <input type="text" id="itinerary-start-point" placeholder="例: 東京、自宅">
+                                        </div>
+                                        <div class="itinerary-point-arrow">→</div>
+                                        <div class="input-field">
+                                            <label for="itinerary-end-point">到着地</label>
+                                            <input type="text" id="itinerary-end-point" placeholder="例: 福岡、ホテル">
+                                        </div>
                                     </div>
-                                    <div class="itinerary-point-arrow">→</div>
-                                    <div class="input-field">
-                                        <label for="itinerary-end-point">到着地</label>
-                                        <input type="text" id="itinerary-end-point" placeholder="例: 福岡、ホテル">
-                                    </div>
+                                    <button id="generate-draft-btn" class="generate-draft-btn">✨ 入力した出発地・到着地から予定の原案を作成する</button>
                                 </div>
 
                                 <!-- Timeline View -->

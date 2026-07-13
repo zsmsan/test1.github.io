@@ -325,6 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const timeEndInput = document.getElementById('timeline-time-end');
         const locationInput = document.getElementById('timeline-location');
         const noteInput = document.getElementById('timeline-note');
+        const generateDraftBtn = document.getElementById('generate-draft-btn');
         
         // Expense input fields (NEW)
         const costInput = document.getElementById('timeline-cost');
@@ -736,7 +737,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.dataset.day = d;
                 btn.onclick = () => {
                     activeItineraryDay = d;
-                    renderItineraryDayContent();
+                    renderItinerary();
                 };
                 itineraryDayTabs.appendChild(btn);
             }
@@ -761,17 +762,89 @@ document.addEventListener('DOMContentLoaded', () => {
             startPointInput.value = dayData.startPoint || '';
             endPointInput.value = dayData.endPoint || '';
 
-            // Listeners with Auto Draft logic
+            // Listeners
             startPointInput.oninput = () => {
                 dayData.startPoint = startPointInput.value.trim();
-                checkAndGenerateDraft(dayData);
                 saveDataToStorage();
             };
 
             endPointInput.oninput = () => {
                 dayData.endPoint = endPointInput.value.trim();
-                checkAndGenerateDraft(dayData);
                 saveDataToStorage();
+            };
+
+            // Manual draft generation on button click
+            generateDraftBtn.onclick = () => {
+                const start = startPointInput.value.trim();
+                const end = endPointInput.value.trim();
+
+                if (!start || !end) {
+                    alert("出発地と到着地の両方を入力してください。");
+                    return;
+                }
+
+                if (dayData.stops && dayData.stops.length > 0) {
+                    if (!confirm("すでに予定が登録されています。原案を作成すると現在の予定が上書きされますが、よろしいですか？")) {
+                        return;
+                    }
+                }
+
+                dayData.stops = [];
+                const totalDays = activeTrip.durationDays || 1;
+
+                if (activeItineraryDay === 1) {
+                    dayData.stops.push({
+                        id: Date.now() + 1,
+                        timeStart: "09:00",
+                        timeEnd: "",
+                        location: `${start}を出発`,
+                        note: "移動開始",
+                        price: 0,
+                        priceType: "none"
+                    });
+                    dayData.stops.push({
+                        id: Date.now() + 2,
+                        timeStart: "17:00",
+                        timeEnd: "",
+                        location: `${end}に到着・ホテルチェックイン`,
+                        note: "宿泊先へ移動",
+                        price: 0,
+                        priceType: "none"
+                    });
+                } else if (activeItineraryDay === totalDays) {
+                    dayData.stops.push({
+                        id: Date.now() + 1,
+                        timeStart: "10:00",
+                        timeEnd: "",
+                        location: `${start}（ホテル）チェックアウト`,
+                        note: "",
+                        price: 0,
+                        priceType: "none"
+                    });
+                    dayData.stops.push({
+                        id: Date.now() + 2,
+                        timeStart: "18:00",
+                        timeEnd: "",
+                        location: `${end}に到着（帰還）`,
+                        note: "旅行終了",
+                        price: 0,
+                        priceType: "none"
+                    });
+                } else {
+                    dayData.stops.push({
+                        id: Date.now() + 1,
+                        timeStart: "10:00",
+                        timeEnd: "",
+                        location: `${start}から${end}周辺を観光・自由行動`,
+                        note: "観光開始",
+                        price: 0,
+                        priceType: "none"
+                    });
+                }
+
+                sortStops(dayData.stops);
+                saveDataToStorage();
+                renderItineraryDayContent();
             };
 
             // Render timeline stops
@@ -783,8 +856,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const timeEnd = timeEndInput.value;
                 const location = locationInput.value.trim();
                 const note = noteInput.value.trim();
-                
-                // Expense details (NEW)
                 const priceVal = parseInt(costInput.value) || 0;
                 const priceType = costTypeSelect.value;
 
@@ -819,75 +890,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 costInput.value = '';
                 costTypeSelect.value = 'none';
             };
-        }
-
-        // AUTO ITINERARY DRAFT GENERATION
-        function checkAndGenerateDraft(dayData) {
-            const start = dayData.startPoint ? dayData.startPoint.trim() : '';
-            const end = dayData.endPoint ? dayData.endPoint.trim() : '';
-
-            // Generate ONLY if both departure and arrival points exist and there are NO stops currently
-            if (start && end && (!dayData.stops || dayData.stops.length === 0)) {
-                dayData.stops = [];
-
-                const totalDays = activeTrip.durationDays || 1;
-
-                if (activeItineraryDay === 1) {
-                    // First Day Draft
-                    dayData.stops.push({
-                        id: Date.now() + 1,
-                        timeStart: "09:00",
-                        timeEnd: "",
-                        location: `${start}を出発`,
-                        note: "移動開始",
-                        price: 0,
-                        priceType: "none"
-                    });
-                    dayData.stops.push({
-                        id: Date.now() + 2,
-                        timeStart: "17:00",
-                        timeEnd: "",
-                        location: `${end}に到着・ホテルチェックイン`,
-                        note: "宿泊先へ移動",
-                        price: 0,
-                        priceType: "none"
-                    });
-                } else if (activeItineraryDay === totalDays) {
-                    // Last Day Draft
-                    dayData.stops.push({
-                        id: Date.now() + 1,
-                        timeStart: "10:00",
-                        timeEnd: "",
-                        location: `${start}（ホテル）チェックアウト`,
-                        note: "",
-                        price: 0,
-                        priceType: "none"
-                    });
-                    dayData.stops.push({
-                        id: Date.now() + 2,
-                        timeStart: "18:00",
-                        timeEnd: "",
-                        location: `${end}に到着（帰宅）`,
-                        note: "旅行終了",
-                        price: 0,
-                        priceType: "none"
-                    });
-                } else {
-                    // Intermediate Days Draft
-                    dayData.stops.push({
-                        id: Date.now() + 1,
-                        timeStart: "10:00",
-                        timeEnd: "",
-                        location: `${start}から${end}周辺を観光・自由行動`,
-                        note: "観光開始",
-                        price: 0,
-                        priceType: "none"
-                    });
-                }
-
-                // Render updated timeline instantly
-                renderTimelineList(dayData);
-            }
         }
 
         function sortStops(stopsArray) {

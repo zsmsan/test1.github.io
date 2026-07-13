@@ -726,6 +726,26 @@ select.trip-select {
     margin-top: 1.25rem;
 }
 
+.generate-draft-btn {
+    width: 100%;
+    background-color: var(--accent-light);
+    color: var(--accent);
+    border: 1px dashed var(--accent);
+    padding: 0.65rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color var(--transition-speed);
+    margin-top: -0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.generate-draft-btn:hover {
+    background-color: #dbeafe;
+}
+
 .timeline-container h3 {
     font-size: 0.95rem;
     font-weight: 700;
