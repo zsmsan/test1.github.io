@@ -76,11 +76,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentUser = sessionStorage.getItem('tr_session_user') || null;
     let currentUserKey = sessionStorage.getItem('tr_session_key') || null; // password hash used as crypto key
 
-    // Users database in localStorage
     const getUsersDb = () => JSON.parse(localStorage.getItem('tr_users')) || {};
     const saveUsersDb = (db) => localStorage.setItem('tr_users', JSON.stringify(db));
 
-    // Initial check
     if (currentUser && currentUserKey) {
         showApp();
     } else {
@@ -92,7 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
         appContent.classList.remove('hidden');
         userMenu.classList.remove('hidden');
         userDisplayName.textContent = `👤 ${currentUser}`;
-        // Load and initialize app data
         initializeApp();
     }
 
@@ -102,7 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
         userMenu.classList.add('hidden');
     }
 
-    // Sign Out
     signoutBtn.addEventListener('click', () => {
         sessionStorage.removeItem('tr_session_user');
         sessionStorage.removeItem('tr_session_key');
@@ -149,34 +145,32 @@ document.addEventListener('DOMContentLoaded', () => {
             trips: {
                 "trip_default": {
                     id: "trip_default",
-                    name: "初めての旅行計画",
+                    name: "京都旅行プラン",
                     startDate: new Date().toISOString().split('T')[0],
                     durationNights: 2,
                     durationDays: 3,
                     itinerary: [
                         { day: 1, startPoint: "東京", endPoint: "京都", stops: [
-                            { id: 1, timeStart: "08:00", timeEnd: "10:15", location: "新幹線で京都へ移動", note: "のぞみ号 指定席" },
-                            { id: 2, timeStart: "11:30", timeEnd: "13:00", location: "京都駅でおばんざいランチ", note: "駅ビル2F" },
-                            { id: 3, timeStart: "14:00", timeEnd: "16:00", location: "清水寺を散策", note: "拝観料 400円" }
+                            { id: 1, timeStart: "08:00", timeEnd: "10:15", location: "新幹線で京都へ移動", note: "のぞみ号 指定席", price: 14000, priceType: "transport" },
+                            { id: 2, timeStart: "11:30", timeEnd: "13:00", location: "京都駅でおばんざいランチ", note: "駅ビル2F", price: 2200, priceType: "stay" },
+                            { id: 3, timeStart: "14:00", timeEnd: "16:00", location: "清水寺を散策", note: "拝観料込", price: 400, priceType: "stay" }
                         ]},
                         { day: 2, startPoint: "京都", endPoint: "嵐山", stops: [
-                            { id: 4, timeStart: "09:30", timeEnd: "12:00", location: "嵐山の竹林の小径", note: "トロッコ列車も検討" }
+                            { id: 4, timeStart: "09:30", timeEnd: "12:00", location: "嵐山の竹林・渡月橋", note: "", price: 0, priceType: "none" }
                         ]},
                         { day: 3, startPoint: "京都", endPoint: "東京", stops: [
-                            { id: 5, timeStart: "16:00", timeEnd: "18:15", location: "新幹線で東京へ帰還", note: "お土産を駅で買う" }
+                            { id: 5, timeStart: "16:00", timeEnd: "18:15", location: "新幹線で東京へ帰還", note: "お土産購入含む", price: 17000, priceType: "transport" }
                         ]}
                     ],
                     packingItems: [
-                        { id: 1, text: '航空券 / 乗車チケット', category: 'essential', packed: false },
-                        { id: 2, text: '財布（免許証・保険証）', category: 'essential', packed: true },
-                        { id: 3, text: 'スマートフォンと充電器', category: 'gadget', packed: false },
-                        { id: 4, text: '洗面道具・常備薬', category: 'toiletries', packed: false },
-                        { id: 5, text: '着替え（日数分）', category: 'clothing', packed: false }
+                        { id: 1, text: '乗車チケット', category: 'essential', packed: false },
+                        { id: 2, text: '財布・身分証', category: 'essential', packed: true },
+                        { id: 3, text: 'スマートフォン・充電器', category: 'gadget', packed: false },
+                        { id: 4, text: '着替え・下着', category: 'clothing', packed: false }
                     ],
                     todoItems: [
-                        { id: 101, text: '新幹線／飛行機のチケット確認', completed: true },
-                        { id: 102, text: 'ホテルの予約確認・チェックイン時間の連絡', completed: false },
-                        { id: 103, text: '冷蔵庫の生ゴミの整理', completed: false }
+                        { id: 101, text: '新幹線の事前購入', completed: true },
+                        { id: 102, text: 'ホテルのチェックイン時間連絡', completed: false }
                     ]
                 }
             }
@@ -248,42 +242,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Migration Check: If old single-trip schema exists, migrate it to multi-trip schema
-        if (userData && !userData.trips) {
-            const legacyPacking = userData.packingItems || [];
-            const legacyTodo = userData.todoItems || [];
-            const legacyDest = userData.destination || 'デフォルトの旅行';
-            const legacyDate = userData.date || '';
-
-            userData = {
-                activeTripId: "trip_migrated",
-                trips: {
-                    "trip_migrated": {
-                        id: "trip_migrated",
-                        name: legacyDest,
-                        startDate: legacyDate,
-                        durationNights: 2,
-                        durationDays: 3,
-                        itinerary: [
-                            { day: 1, startPoint: "", endPoint: "", stops: [] },
-                            { day: 2, startPoint: "", endPoint: "", stops: [] },
-                            { day: 3, startPoint: "", endPoint: "", stops: [] }
-                        ],
-                        packingItems: legacyPacking,
-                        todoItems: legacyTodo
-                    }
-                }
-            };
-            // Save migrated data immediately
-            const encrypted = encryptData(userData, currentUserKey);
-            localStorage.setItem(`tr_data_${currentUser}`, encrypted);
-        }
-
         // Guarantee at least one trip exists
         if (Object.keys(userData.trips).length === 0) {
             userData.trips["trip_default"] = {
                 id: "trip_default",
-                name: "新しい旅行プラン",
+                name: "新しい旅行計画",
                 startDate: new Date().toISOString().split('T')[0],
                 durationNights: 0,
                 durationDays: 1,
@@ -334,6 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const checklistPanel = document.getElementById('checklist-panel');
         const itineraryPanel = document.getElementById('itinerary-panel');
         const todoPanel = document.getElementById('todo-panel');
+        const comparePanel = document.getElementById('compare-panel');
 
         const progressBarFill = document.getElementById('progress-bar-fill');
         const progressPercentage = document.getElementById('progress-percentage');
@@ -361,7 +325,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const timeEndInput = document.getElementById('timeline-time-end');
         const locationInput = document.getElementById('timeline-location');
         const noteInput = document.getElementById('timeline-note');
+        
+        // Expense input fields (NEW)
+        const costInput = document.getElementById('timeline-cost');
+        const costTypeSelect = document.getElementById('timeline-cost-type');
         const addTimelineBtn = document.getElementById('add-timeline-btn');
+
+        // Budget summary DOM fields (NEW)
+        const totalCostVal = document.getElementById('total-cost-val');
+        const transportCostVal = document.getElementById('transport-cost-val');
+        const stayCostVal = document.getElementById('stay-cost-val');
+
+        // Compare dashboard table body (NEW)
+        const compareTableBody = document.getElementById('compare-table-body');
 
         // Todo panel elements
         const todoList = document.getElementById('todo-list');
@@ -374,6 +350,43 @@ document.addEventListener('DOMContentLoaded', () => {
             const encrypted = encryptData(userData, currentUserKey);
             localStorage.setItem(`tr_data_${currentUser}`, encrypted);
             updateProgress();
+            updateBudgetSummary();
+        }
+
+        // ==========================================
+        // BUDGET SUMMARY LOGIC
+        // ==========================================
+        function updateBudgetSummary() {
+            if (!activeTrip) return;
+            const sums = calculateTripCosts(activeTrip);
+
+            totalCostVal.textContent = `${sums.total.toLocaleString()}円`;
+            transportCostVal.textContent = `${sums.transport.toLocaleString()}円`;
+            stayCostVal.textContent = `${sums.stay.toLocaleString()}円`;
+        }
+
+        function calculateTripCosts(trip) {
+            let total = 0;
+            let transport = 0;
+            let stay = 0;
+
+            if (trip.itinerary) {
+                trip.itinerary.forEach(day => {
+                    if (day.stops) {
+                        day.stops.forEach(stop => {
+                            const price = parseInt(stop.price) || 0;
+                            total += price;
+                            if (stop.priceType === 'transport') {
+                                transport += price;
+                            } else if (stop.priceType === 'stay') {
+                                stay += price;
+                            }
+                        });
+                    }
+                });
+            }
+
+            return { total, transport, stay };
         }
 
         // ==========================================
@@ -392,7 +405,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Trip select event
         tripSelect.onchange = () => {
             activeTripId = tripSelect.value;
             userData.activeTripId = activeTripId;
@@ -402,7 +414,6 @@ document.addEventListener('DOMContentLoaded', () => {
             refreshActiveTripView();
         };
 
-        // Modal triggers
         newTripBtn.onclick = () => {
             newTripModal.classList.remove('hidden');
         };
@@ -411,14 +422,12 @@ document.addEventListener('DOMContentLoaded', () => {
             newTripModal.classList.add('hidden');
         };
 
-        // Click outside modal content to close
         window.onclick = (e) => {
             if (e.target === newTripModal) {
                 newTripModal.classList.add('hidden');
             }
         };
 
-        // Handle new trip creation
         newTripForm.onsubmit = (e) => {
             e.preventDefault();
             const name = document.getElementById('modal-trip-name').value.trim();
@@ -429,7 +438,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (name && startDate) {
                 const newId = `trip_${Date.now()}`;
                 
-                // Initialize Itinerary days
                 const newItinerary = [];
                 for (let i = 1; i <= days; i++) {
                     newItinerary.push({
@@ -472,7 +480,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
-        // Delete active trip
         deleteTripBtn.onclick = () => {
             const tripCount = Object.keys(userData.trips).length;
             if (tripCount <= 1) {
@@ -482,7 +489,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (confirm(`本当に「${activeTrip.name}」を削除しますか？\nこの操作は取り消せません。`)) {
                 delete userData.trips[activeTripId];
-                // Select first available trip
                 activeTripId = Object.keys(userData.trips)[0];
                 userData.activeTripId = activeTripId;
                 activeTrip = userData.trips[activeTripId];
@@ -540,6 +546,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 checklistPanel.classList.add('hidden');
                 itineraryPanel.classList.add('hidden');
                 todoPanel.classList.add('hidden');
+                comparePanel.classList.add('hidden');
 
                 if (tab === 'checklist') {
                     checklistPanel.classList.remove('hidden');
@@ -549,9 +556,62 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else if (tab === 'todo') {
                     todoPanel.classList.remove('hidden');
                     renderTodos();
+                } else if (tab === 'compare') {
+                    comparePanel.classList.remove('hidden');
+                    renderCompareDashboard();
                 }
             };
         });
+
+        // ==========================================
+        // COMPARE PLAN DASHBOARD
+        // ==========================================
+        function renderCompareDashboard() {
+            compareTableBody.innerHTML = '';
+            
+            Object.values(userData.trips).forEach(trip => {
+                const tr = document.createElement('tr');
+                if (trip.id === activeTripId) {
+                    tr.className = 'compare-active-row';
+                }
+
+                const durationStr = `${trip.durationNights}泊${trip.durationDays}日`;
+                const costs = calculateTripCosts(trip);
+                
+                // Pack rate
+                const totalItems = trip.packingItems ? trip.packingItems.length : 0;
+                const packedItems = trip.packingItems ? trip.packingItems.filter(item => item.packed).length : 0;
+                const progressRate = totalItems > 0 ? Math.round((packedItems / totalItems) * 100) : 0;
+
+                tr.innerHTML = `
+                    <td>
+                        <strong>${escapeHtml(trip.name)}</strong>
+                        ${trip.id === activeTripId ? '<span class="compare-active-badge">選択中</span>' : ''}
+                    </td>
+                    <td>${durationStr}</td>
+                    <td>${trip.startDate || '未設定'}</td>
+                    <td>${costs.transport.toLocaleString()}円</td>
+                    <td>${costs.stay.toLocaleString()}円</td>
+                    <td><strong>${costs.total.toLocaleString()}円</strong></td>
+                    <td>${progressRate}% (${packedItems}/${totalItems})</td>
+                `;
+
+                // Let clicking a row switch to that plan
+                tr.style.cursor = 'pointer';
+                tr.onclick = () => {
+                    activeTripId = trip.id;
+                    userData.activeTripId = activeTripId;
+                    activeTrip = userData.trips[activeTripId];
+                    activeItineraryDay = 1;
+                    saveDataToStorage();
+                    renderTripSelect();
+                    refreshActiveTripView();
+                    renderCompareDashboard();
+                };
+
+                compareTableBody.appendChild(tr);
+            });
+        }
 
         // ==========================================
         // PACKING CHECKLIST CORE LOGIC
@@ -657,14 +717,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // ==========================================
-        // ITINERARY (ITINERARY PLANNER) CORE LOGIC
+        // ITINERARY CORE LOGIC & DRAFT GENERATOR
         // ==========================================
         function renderItinerary() {
             if (!activeTrip) return;
             const durationDays = activeTrip.durationDays || 1;
             const nights = activeTrip.durationNights || 0;
 
-            // Header summary string
             const itineraryCard = document.getElementById('itinerary-panel').querySelector('h2');
             itineraryCard.innerHTML = `🗺️ 行程表 (${nights}泊${durationDays}日)`;
 
@@ -686,72 +745,37 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         function renderItineraryDayContent() {
-            // Find active day itinerary details
             if (!activeTrip.itinerary) {
-                // Initialize if missing
                 activeTrip.itinerary = [];
                 for (let i = 1; i <= activeTrip.durationDays; i++) {
                     activeTrip.itinerary.push({ day: i, startPoint: "", endPoint: "", stops: [] });
                 }
             }
 
-            // Ensure activeItineraryDay exists in array
             let dayData = activeTrip.itinerary.find(it => it.day === activeItineraryDay);
             if (!dayData) {
                 dayData = { day: activeItineraryDay, startPoint: "", endPoint: "", stops: [] };
                 activeTrip.itinerary.push(dayData);
             }
 
-            // Bind values
             startPointInput.value = dayData.startPoint || '';
             endPointInput.value = dayData.endPoint || '';
 
-            // Handle start/end point changes
+            // Listeners with Auto Draft logic
             startPointInput.oninput = () => {
                 dayData.startPoint = startPointInput.value.trim();
+                checkAndGenerateDraft(dayData);
                 saveDataToStorage();
             };
 
             endPointInput.oninput = () => {
                 dayData.endPoint = endPointInput.value.trim();
+                checkAndGenerateDraft(dayData);
                 saveDataToStorage();
             };
 
             // Render timeline stops
-            timelineList.innerHTML = '';
-            const stops = dayData.stops || [];
-
-            if (stops.length === 0) {
-                timelineList.innerHTML = `<p class="card-desc" style="padding: 1rem 0; text-align:center;">まだスケジュールがありません。下のフォームから予定を追加しましょう！</p>`;
-            } else {
-                stops.forEach(stop => {
-                    const item = document.createElement('div');
-                    item.className = 'timeline-item';
-                    item.dataset.id = stop.id;
-
-                    const timeDisplay = formatTimeDisplay(stop.timeStart, stop.timeEnd);
-
-                    item.innerHTML = `
-                        <div class="timeline-time-col">
-                            ${timeDisplay}
-                        </div>
-                        <div class="timeline-content-col">
-                            <div class="timeline-location-text">${escapeHtml(stop.location)}</div>
-                            ${stop.note ? `<div class="timeline-note-text">📝 ${escapeHtml(stop.note)}</div>` : ''}
-                        </div>
-                        <button class="delete-btn" aria-label="削除">&times;</button>
-                    `;
-
-                    // Delete stop
-                    item.querySelector('.delete-btn').onclick = () => {
-                        dayData.stops = dayData.stops.filter(s => s.id !== stop.id);
-                        saveDataToStorage();
-                        renderItineraryDayContent();
-                    };
-
-                    timelineList.appendChild(item);
-                });
-            }
+            renderTimelineList(dayData);
 
             // Add timeline event
             addTimelineBtn.onclick = () => {
@@ -759,9 +783,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const timeEnd = timeEndInput.value;
                 const location = locationInput.value.trim();
                 const note = noteInput.value.trim();
+                
+                // Expense details (NEW)
+                const priceVal = parseInt(costInput.value) || 0;
+                const priceType = costTypeSelect.value;
 
                 if (!location) {
-                    alert("場所または行動内容を入力してください。");
+                    alert("行動・出来事の内容を入力してください。");
                     return;
                 }
 
@@ -772,15 +800,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     timeStart: timeStart,
                     timeEnd: timeEnd,
                     location: location,
-                    note: note
+                    note: note,
+                    price: priceVal,
+                    priceType: priceType
                 });
 
-                // Chronological sorting based on start time
-                dayData.stops.sort((a, b) => {
-                    if (!a.timeStart) return 1;
-                    if (!b.timeStart) return -1;
-                    return a.timeStart.localeCompare(b.timeStart);
-                });
+                // Chronological sort
+                sortStops(dayData.stops);
 
                 saveDataToStorage();
                 renderItineraryDayContent();
@@ -790,7 +816,136 @@ document.addEventListener('DOMContentLoaded', () => {
                 timeEndInput.value = '';
                 locationInput.value = '';
                 noteInput.value = '';
+                costInput.value = '';
+                costTypeSelect.value = 'none';
             };
+        }
+
+        // AUTO ITINERARY DRAFT GENERATION
+        function checkAndGenerateDraft(dayData) {
+            const start = dayData.startPoint ? dayData.startPoint.trim() : '';
+            const end = dayData.endPoint ? dayData.endPoint.trim() : '';
+
+            // Generate ONLY if both departure and arrival points exist and there are NO stops currently
+            if (start && end && (!dayData.stops || dayData.stops.length === 0)) {
+                dayData.stops = [];
+
+                const totalDays = activeTrip.durationDays || 1;
+
+                if (activeItineraryDay === 1) {
+                    // First Day Draft
+                    dayData.stops.push({
+                        id: Date.now() + 1,
+                        timeStart: "09:00",
+                        timeEnd: "",
+                        location: `${start}を出発`,
+                        note: "移動開始",
+                        price: 0,
+                        priceType: "none"
+                    });
+                    dayData.stops.push({
+                        id: Date.now() + 2,
+                        timeStart: "17:00",
+                        timeEnd: "",
+                        location: `${end}に到着・ホテルチェックイン`,
+                        note: "宿泊先へ移動",
+                        price: 0,
+                        priceType: "none"
+                    });
+                } else if (activeItineraryDay === totalDays) {
+                    // Last Day Draft
+                    dayData.stops.push({
+                        id: Date.now() + 1,
+                        timeStart: "10:00",
+                        timeEnd: "",
+                        location: `${start}（ホテル）チェックアウト`,
+                        note: "",
+                        price: 0,
+                        priceType: "none"
+                    });
+                    dayData.stops.push({
+                        id: Date.now() + 2,
+                        timeStart: "18:00",
+                        timeEnd: "",
+                        location: `${end}に到着（帰宅）`,
+                        note: "旅行終了",
+                        price: 0,
+                        priceType: "none"
+                    });
+                } else {
+                    // Intermediate Days Draft
+                    dayData.stops.push({
+                        id: Date.now() + 1,
+                        timeStart: "10:00",
+                        timeEnd: "",
+                        location: `${start}から${end}周辺を観光・自由行動`,
+                        note: "観光開始",
+                        price: 0,
+                        priceType: "none"
+                    });
+                }
+
+                // Render updated timeline instantly
+                renderTimelineList(dayData);
+            }
+        }
+
+        function sortStops(stopsArray) {
+            stopsArray.sort((a, b) => {
+                if (!a.timeStart) return 1;
+                if (!b.timeStart) return -1;
+                return a.timeStart.localeCompare(b.timeStart);
+            });
+        }
+
+        function renderTimelineList(dayData) {
+            timelineList.innerHTML = '';
+            const stops = dayData.stops || [];
+
+            if (stops.length === 0) {
+                timelineList.innerHTML = `<p class="card-desc" style="padding: 1rem 0; text-align:center;">まだスケジュールがありません。出発地と到着地の両方を入力すると、原案スケジュールが自動生成されます。</p>`;
+                return;
+            }
+
+            stops.forEach(stop => {
+                const item = document.createElement('div');
+                item.className = 'timeline-item';
+                item.dataset.id = stop.id;
+
+                const timeDisplay = formatTimeDisplay(stop.timeStart, stop.timeEnd);
+                
+                // Render cost badge (NEW)
+                let costBadge = '';
+                const priceVal = parseInt(stop.price) || 0;
+                if (priceVal > 0) {
+                    const icon = stop.priceType === 'transport' ? '🚗' : '🏨';
+                    const label = stop.priceType === 'transport' ? '交通費' : '滞在費';
+                    costBadge = `<span class="timeline-cost-tag">${icon} ${label}: ${priceVal.toLocaleString()}円</span>`;
+                }
+
+                item.innerHTML = `
+                    <div class="timeline-time-col">
+                        ${timeDisplay}
+                    </div>
+                    <div class="timeline-content-col">
+                        <div class="timeline-location-text">
+                            ${escapeHtml(stop.location)}
+                            ${costBadge}
+                        </div>
+                        ${stop.note ? `<div class="timeline-note-text">📝 ${escapeHtml(stop.note)}</div>` : ''}
+                    </div>
+                    <button class="delete-btn" aria-label="削除">&times;</button>
+                `;
+
+                // Delete stop
+                item.querySelector('.delete-btn').onclick = () => {
+                    dayData.stops = dayData.stops.filter(s => s.id !== stop.id);
+                    saveDataToStorage();
+                    renderItineraryDayContent();
+                };
+
+                timelineList.appendChild(item);
+            });
         }
 
         function formatTimeDisplay(start, end) {
@@ -810,66 +965,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             return display;
         }
-
-        // ==========================================
-        // PRESET INTEGRATION
-        // ==========================================
-        const presets = {
-            resort: [
-                { text: 'サングラス', category: 'essential' },
-                { text: '日焼け止めクリーム', category: 'toiletries' },
-                { text: '水着・ラッシュガード', category: 'clothing' },
-                { text: 'ビーチサンダル', category: 'clothing' },
-                { text: '防水スマホケース', category: 'gadget' }
-            ],
-            cold: [
-                { text: '防寒インナー（ヒートテック等）', category: 'clothing' },
-                { text: 'マフラー・手袋・ニット帽', category: 'clothing' },
-                { text: '使い捨てカイロ', category: 'toiletries' },
-                { text: '保湿リップ・乳液', category: 'toiletries' },
-                { text: '入浴剤', category: 'toiletries' }
-            ],
-            business: [
-                { text: '名刺入れ・予備の名刺', category: 'essential' },
-                { text: 'スーツ・ネクタイ / 制服', category: 'clothing' },
-                { text: 'ノートPC・タブレット', category: 'gadget' },
-                { text: 'PC用充電アダプター・マウス', category: 'gadget' },
-                { text: 'メモ帳・ボールペン', category: 'essential' }
-            ]
-        };
-
-        presetButtons.forEach(btn => {
-            btn.onclick = () => {
-                const presetType = btn.getAttribute('data-preset');
-                const itemsToAdd = presets[presetType];
-
-                if (itemsToAdd && activeTrip) {
-                    if (!activeTrip.packingItems) activeTrip.packingItems = [];
-
-                    itemsToAdd.forEach(pItem => {
-                        const exists = activeTrip.packingItems.some(item => item.text.toLowerCase() === pItem.text.toLowerCase());
-                        if (!exists) {
-                            activeTrip.packingItems.push({
-                                id: Date.now() + Math.random(),
-                                text: pItem.text,
-                                category: pItem.category,
-                                packed: false
-                            });
-                        }
-                    });
-                    saveDataToStorage();
-                    renderPackingItems();
-
-                    // active animation
-                    btn.style.borderColor = 'var(--accent)';
-                    btn.style.background = 'rgba(46, 196, 182, 0.15)';
-                    setTimeout(() => {
-                        btn.style.borderColor = 'var(--border-color)';
-                        btn.style.background = 'rgba(255, 255, 255, 0.03)';
-                    }, 800);
-                }
-            };
-        });
 
         // ==========================================
         // PRE-DEPARTURE TODO LIST
@@ -920,14 +1015,16 @@ document.addEventListener('DOMContentLoaded', () => {
             updateCountdown();
             renderPackingItems();
             updateProgress();
+            updateBudgetSummary();
 
-            // Refresh sub-views depending on active panel
             const activeMainTabBtn = document.querySelector('.main-tab-btn.active');
             const activeTab = activeMainTabBtn.getAttribute('data-main-tab');
             if (activeTab === 'itinerary') {
                 renderItinerary();
             } else if (activeTab === 'todo') {
                 renderTodos();
+            } else if (activeTab === 'compare') {
+                renderCompareDashboard();
             }
         }
 
@@ -935,7 +1032,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTripSelect();
         refreshActiveTripView();
         
-        // Setup countdown checker interval
         clearInterval(window.countdownInterval);
         window.countdownInterval = setInterval(updateCountdown, 60000);
     }
